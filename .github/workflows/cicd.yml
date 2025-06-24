@@ -62,16 +62,6 @@ jobs:
             -e DB_NAME=${{ secrets.DB_NAME }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -e APP_NAME=${{ secrets.APP_NAME }} \
-            -e APP_HOST=${{ secrets.APP_HOST }} \
-            -e APP_PORT=${{ secrets.APP_PORT }} \
-            -e APP_PORT_SOCKET=${{ secrets.APP_PORT_SOCKET }} \
-            -e APP_SECRET=${{ secrets.APP_SECRET }} \
-            -e MONGODB_URI=${{ secrets.MONGODB_URI }} \
-            -e ELASTIC_PASSWORD=${{ secrets.ELASTIC_PASSWORD }} \
-            -e KIBANA_SYSTEM_PASSWORD=${{ secrets.KIBANA_SYSTEM_PASSWORD }} \
-            -e APM_SYSTEM_PASSWORD=${{ secrets.APM_SYSTEM_PASSWORD }} \
-            -e APM_SECRET_TOKEN=${{ secrets.APM_SECRET_TOKEN }} \
             radenraflyy/simple-messaging-app:latest
 
       # - name: Set up Node.js
