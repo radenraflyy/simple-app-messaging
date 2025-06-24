@@ -1,0 +1,55 @@
+name: Deploy Simple Messaging App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        uses: echo "PORT=${{ secrets.PORT }}"
+
+      - name: Login to Docker Hub
+        uses: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        uses: docker build . -t radenraflyy/simple-messaging-app
+
+      - name: Push Docker image to Docker Hub
+        uses: docker push radenraflyy/simple-messaging-app:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull Docker image
+        run: docker pull radenraflyy/simple-messaging-app:latest
+
+      - name: Delete old Docker container
+        run: docker rm -f simple-messaging-app
+
+      - name: Run New Docker container
+        run: docker run -d -p 8080:8080 -p 4000:4000 --name simple-messaging-app radenraflyy/simple-messaging-app:latest
+
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '14'
+
+      # - name: Install dependencies
+      #   run: npm install
+
+      # - name: Run tests
+      #   run: npm test
+
+      # - name: Build the application
+      #   run: npm run build
