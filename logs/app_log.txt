@@ -1,0 +1,13 @@
+2025/06/21 05:51:40 ====Database Migrated====
+2025/06/21 05:51:41 successfully connected to mongoDB
+2025/06/21 19:37:53 ====Database Migrated====
+2025/06/21 19:37:53 successfully connected to mongoDB
+2025/06/22 06:16:04 ====Database Migrated====
+2025/06/22 06:16:04 successfully connected to mongoDB
+2025/06/22 10:37:37 ====Database Migrated====
+2025/06/22 10:37:37 successfully connected to mongoDB
+2025/06/22 11:25:59 ====Database Migrated====
+2025/06/22 11:25:59 successfully connected to mongoDB
+2025/06/23 21:19:38 Failed to connect to the database Error 1049 (42000): Unknown database 'simple_messaging'
+2025/06/23 21:20:31 ====Database Migrated====
+2025/06/23 21:20:31 successfully connected to mongoDB

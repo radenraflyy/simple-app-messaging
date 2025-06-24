@@ -1,0 +1,89 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=false
+      # bootstrap the elastic superuser
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+      - SERVER_HOST=0.0.0.0
+      - xpack.security.enabled=true
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.17.0
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - ../logs:/usr/share/logstash/logs:ro
+    ports:
+      - "5044:5044"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.17.0
+    # user: root
+    volumes:
+      - ../logs:/usr/share/filebeat/logs:ro
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    depends_on:
+      - elasticsearch
+      - logstash
+    networks:
+      - elk
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:8.17.0
+    environment:
+      - output.elasticsearch.hosts=http://elasticsearch:9200
+      - output.elasticsearch.username=apm_system
+      - output.elasticsearch.password=${APM_SYSTEM_PASSWORD}
+      - apm-server.kibana.enabled=true
+      - apm-server.kibana.host=http://kibana:5601
+      - apm-server.secret_token=${APM_SECRET_TOKEN}
+    ports:
+      - "8200:8200"
+    depends_on:
+      - elasticsearch
+      - kibana
+    networks:
+      - elk
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  elk:
+    driver: bridge
